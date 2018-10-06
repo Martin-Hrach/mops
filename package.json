@@ -1,0 +1,17 @@
+{
+  "name": "mops",
+  "version": "0.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "chart.js": "^2.7.2",
+    "express": "*",
+    "express-handlebars": "^3.0.0"
+  },
+  "author": "Ikaruss",
+  "license": "ISC"
+}
