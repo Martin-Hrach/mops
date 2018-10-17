@@ -9,8 +9,12 @@
   "dependencies": {
     "body-parser": "*",
     "chart.js": "^2.7.2",
+    "commander": "^2.19.0",
+    "ejs": "^2.6.1",
     "express": "*",
-    "express-handlebars": "^3.0.0"
+    "express-handlebars": "^3.0.0",
+    "node-cmd": "^3.0.0",
+    "request": "^2.88.0"
   },
   "author": "Ikaruss",
   "license": "ISC"
