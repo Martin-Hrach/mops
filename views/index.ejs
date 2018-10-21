@@ -4,40 +4,69 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
 </head>
 <body>
-	<h1>Mops test-chart</h1>
-	<canvas id="myChart" width="400" height="400"></canvas>
+	<h1>test-chart: beta</h1>
 
-	<script>
-	var lulWords = "<%= lulWords %>".split(",").map(a=> +a);
-	var sadWords = "<%= sadWords %>".split(",").map(a=> +a);
-	var timeArr = "<%= timeArr %>".split(",");
-	
+<script>
+document.body.style.backgroundColor = "gray";
 
-	var ctx = document.getElementById("myChart").getContext('2d');
-  var chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: timeArr,
-      datasets: [
-        {
-          data: lulWords,
-          label: "lul",
-          borderColor: "#3cba9f"
-        }, {
-          data: sadWords,
-          label: "sad",
-          borderColor: "#8e5ea5"
-        },
-      ]
-    },
-    option: {
-      title: {
-        display: true,
-        text: "Some title"
-      }
-    }
-  });
+let data = <%- JSON.stringify(arrObj) %>
+console.log(data)
+data.forEach((a,i)=> {
+
+	let divWrapper = document.createElement('div')
+			divWrapper.style.border = "thin dotted black";
+			divWrapper.style.backgroundColor = "lightblue"
+			divWrapper.style.width= "90%";
+			divWrapper.style.padding = "10px 10px 10px 10px";
+	let nadpis = document.createElement("H3")
+			nadpis.innerHTML = `${a.info.title}  (${a.info.channel.name})`
+	let odkaz = document.createElement("a")
+			odkaz.href = a.info.url
+			odkaz.innerHTML = a.info.url
+	let canvas = document.createElement("canvas");
+			canvas.setAttribute("id", "myChart"+i);
+
+	document.body.appendChild(divWrapper)
+	divWrapper.appendChild(nadpis)
+	divWrapper.appendChild(odkaz)
+	divWrapper.appendChild(canvas)
+	});
+
+
+data.forEach((obj,i) => {
+
+	var chartID = "myChart"+ (i);
+	console.log(chartID)
+	var ctx = document.getElementById(chartID).getContext('2d');
+
+		var newDiv = document.createElement('div')
+		var chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: obj.time,
+				datasets: [
+					{
+						data: obj.lul,
+						label: "lul",
+						borderColor: "#3cba9f"
+					}, {
+						data: obj.sad,
+						label: 'sad',
+						borderColor: "#FF6277"
+					},
+				]
+			},
+			option: {
+				title: {
+					display: true,
+					text: "Some title"
+				}
+			}
+	});
+})
+
 </script>
 </body>
+
 
 </html>

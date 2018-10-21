@@ -6,11 +6,16 @@ const https = require("https");
 const ejs = require('ejs');
 const cmd = require('node-cmd');
 
-
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
-const streamers = ["grimmmz","smoke","kotton","nl_kripp"];
-const allResponse = [];
-//app.locals.allResponse = allResponse
+const streamers = ["grimmmz", "sequisha", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "ninja", "tfue",
+ 									 "forsen", "amazhs", "loltyler1", "sodapoppin","anton"];
+const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
+const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
+const arrObj = [];
+app.locals.arrObj = arrObj;
+
+app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, 'views'));
 
 // loop request o videa zadaných streamerů
 streamers.forEach(streamer => {
@@ -31,18 +36,20 @@ streamers.forEach(streamer => {
 
 			res.on('end', function() {
 				const d = new Date();
- 			  const datestring = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
+ 			  const datestringLast = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
+				const today = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
-        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestring))
-			  //tahle část je funkční, filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datu
+        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 || 
+				 																										 a.published_at.slice(0,10).toString() == today && a.length > 3600 ))
+			  // filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datua určité délky
 	      if(allResponse.length === streamers.length) { requestsComplet() } //čekání na vyplnění všech requestů a následné volání funkce
+
 	  	});
 		})
 });
 
 function requestsComplet() {
 		const videosID = [].concat(...allResponse).map(a => a._id.slice(1))
-
 		console.log(`počet objektů v array: ${allResponse.length}`)
 		//console.log(JSON.stringify(allResponse, null, 2))
 		//console.log(JSON.stringify(videosID, null, 2))
@@ -50,22 +57,19 @@ function requestsComplet() {
 		cmdDonwload(videosID);
 };
 
-const testRes = [] // ukládání reponse pro zajištění podmínky při čekání na vyplnení úkolů
-
 function cmdDonwload(videosID) {
 	console.log(`Spouštím stahovnání...\n`)
-
+	let count = 1;
 	videosID.forEach((a,i) => cmd.get(`cd twitchChat & rechatTool -D ${a}`,
 		function(err, data, stderr){
 						if(err) {console.log(`tento soubor již exituje ${err}`)}
 						testRes.push(data)
-						console.log(`stažení ${i+1} souboru z ${videosID.length} dokončeno`)
+						console.log(`stažení ${count} souboru z ${videosID.length} dokončeno`)
+						count++
 						if(testRes.length === videosID.length) { done(videosID.length) }
 		})
 	);
-};
-// logika dokončena, spustí stahování chatu cílového streamu po dokončení zavolá callback
-// po dokončení stahování všech souborů zavola funcki done
+};// po dokončení stahování všech souborů zavola funcki done
 
 function done(info) {
 	fs.readdir(dirpath, function(err, files) {
@@ -74,30 +78,14 @@ function done(info) {
 		txtFiles.forEach(item => lineReader(item))
 	});
 	console.log(`Všechny soubory úspěšně zpracovány, celkem staženo: ${info}`)
-
 	/*player.play('./mech.mp3', (err) => {
 		if (err) console.log(`Could not play sound: ${err}`); nainstalovat mpplayer a pak nastavit path pro windows:/
 	});*/
 };
 
-// =================== ZDE JE PROZATÍM VŠE DOKONČENO ==================================
-app.set("view engine", "ejs");
-app.set('views', path.join(__dirname, 'views'));
-
-/*** variables => ve finále nebudou potřeba , místo toho použiju arrObj, kde budou umístěny všechny informace ***/
-const timeArr = [];
-const lulWords = [];
-const sadWords = [];
-app.locals.timeArr = timeArr;
-app.locals.lulWords = lulWords;
-app.locals.sadWords = sadWords;
-
-
-let arrObj = []; //TESTING 19.10 ZDÁ SE, ŽE JE VŠE FUNKČNÍ, NYNÍ UŽ JEN DOKONČIT ZOBRAZENÍ DAT !!
-/****************/
 function lineReader(textID) {
   let target = [].concat(...allResponse).filter(target => target._id == "v"+ textID.slice(0,9));
-	let makeObj = { info: target, time: [], lul: [] };
+	let makeObj = { info: target[0], time: [], lul: [], sad: [] };
 	let time = 0;
 	let lul = 0;
 	let sad = 0;
@@ -123,16 +111,13 @@ function lineReader(textID) {
 			const splitedItem = item[1].slice(0,8).split(":");
 			const convertTime = (+splitedItem[0]) * 60 * 60 + (+splitedItem[1]) * 60 + (+splitedItem[2]);
 			let date = new Date(null);
-					date.setSeconds(convertTime-30) // specify value for SECONDS here
+					date.setSeconds(convertTime) // specify value for SECONDS here
 	    const result = date.toISOString().substr(11, 8);
 
-			if ( (convertTime - time) >= 60 ) { //vložit do array každou časovou jednotku a vynulovat počty nalezených slov
-				timeArr.push(result)
-				lulWords.push(lul)
-				sadWords.push(sad) // zastaralá část, použitá pro testovaní ;)
-
-				makeObj.time.push(result) // zde ještě přidat sad do makeObj
+			if ( (convertTime - time) >= 20 ) { //vložit do array každou časovou jednotku a vynulovat počty nalezených slov
+				makeObj.time.push(result)
 				makeObj.lul.push(lul)
+				makeObj.sad.push(sad)
 				lul = 0;
 				sad = 0;
 				time = convertTime;
