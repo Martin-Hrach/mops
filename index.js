@@ -8,7 +8,7 @@ const cmd = require('node-cmd');
 
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
 const streamers = ["grimmmz", "sequisha", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "ninja", "tfue",
- 									 "forsen", "amazhs", "loltyler1", "sodapoppin","anton"];
+ 									 "forsen", "amazhs", "loltyler1", "sodapoppin","anton"¨, "summit1g"];
 const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
 const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
 const arrObj = [];
@@ -39,16 +39,16 @@ streamers.forEach(streamer => {
  			  const datestringLast = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
 				const today = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
-        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 || 
+        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
 				 																										 a.published_at.slice(0,10).toString() == today && a.length > 3600 ))
 			  // filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datua určité délky
-	      if(allResponse.length === streamers.length) { requestsComplet() } //čekání na vyplnění všech requestů a následné volání funkce
+	      if(allResponse.length === streamers.length) { requestsComplete() } //čekání na vyplnění všech requestů a následné volání funkce
 
 	  	});
 		})
 });
 
-function requestsComplet() {
+function requestsComplete() {
 		const videosID = [].concat(...allResponse).map(a => a._id.slice(1))
 		console.log(`počet objektů v array: ${allResponse.length}`)
 		//console.log(JSON.stringify(allResponse, null, 2))

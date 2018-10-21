@@ -14,8 +14,11 @@ console.log(data)
 data.forEach((a,i)=> {
 
 	let divWrapper = document.createElement('div')
+			divWrapper.style.position = "relative";
+			divWrapper.style.left = "5%";
 			divWrapper.style.border = "thin dotted black";
-			divWrapper.style.backgroundColor = "lightblue"
+			divWrapper.style.borderRadius = "10px"
+			divWrapper.style.backgroundColor = "#e6ffff"
 			divWrapper.style.width= "90%";
 			divWrapper.style.padding = "10px 10px 10px 10px";
 	let nadpis = document.createElement("H3")
