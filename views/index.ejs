@@ -3,47 +3,63 @@
 <head>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
 </head>
+<style>
+body {
+
+	background-color: #61819A;
+}
+.container {
+	border: 1px solid gray;
+	border-radius: 8px;
+	background-color: white;
+	width: 90%;
+	display: table;
+  margin: 0 auto;
+	margin-top: 10px;
+	padding: 10px;
+	line-height: 8px;
+	}
+
+.nadpis {
+		color: darkred;
+}
+
+p {
+	color: gray;
+}
+
+</style>
+
 <body>
-	<h1>test-chart: beta</h1>
+	<h1>test-chart v0.7</h1>
 
 <script>
-document.body.style.backgroundColor = "gray";
+
 
 let data = <%- JSON.stringify(arrObj) %>
 console.log(data)
-data.forEach((a,i)=> {
-
-	let divWrapper = document.createElement('div')
-			divWrapper.style.position = "relative";
-			divWrapper.style.left = "5%";
-			divWrapper.style.border = "thin dotted black";
-			divWrapper.style.borderRadius = "10px"
-			divWrapper.style.backgroundColor = "#e6ffff"
-			divWrapper.style.width= "90%";
-			divWrapper.style.padding = "10px 10px 10px 10px";
-	let nadpis = document.createElement("H3")
-			nadpis.innerHTML = `${a.info.title}  (${a.info.channel.name})`
-	let odkaz = document.createElement("a")
-			odkaz.href = a.info.url
-			odkaz.innerHTML = a.info.url
-	let canvas = document.createElement("canvas");
-			canvas.setAttribute("id", "myChart"+i);
-
-	document.body.appendChild(divWrapper)
-	divWrapper.appendChild(nadpis)
-	divWrapper.appendChild(odkaz)
-	divWrapper.appendChild(canvas)
-	});
+data.forEach((item,i) => {
+	const newDiv = document.createElement("div")
+				newDiv.setAttribute("class", "container")
+	const markup =`
+		<h3 class = "nadpis">${item.info.title} </h3>
+		<h3 class = "streamer">${item.info.channel.name} </h3>
+		<p class = "publikováno">Publikováno: ${item.info.published_at} </p>
+		<p class = "views">Shlédnu: ${item.info.views}x	</p>
+ 		<a href= ${item.info.url}>Link: ${item.info.url} </a>
+		<canvas id = "myChart${i}"> </canvas>
+	`
+		newDiv.innerHTML = markup;
+		document.body.appendChild(newDiv)
+})
 
 
 data.forEach((obj,i) => {
+	const chartID = "myChart"+ (i);
+	const ctx = document.getElementById(chartID).getContext('2d');
 
-	var chartID = "myChart"+ (i);
-	console.log(chartID)
-	var ctx = document.getElementById(chartID).getContext('2d');
-
-		var newDiv = document.createElement('div')
-		var chart = new Chart(ctx, {
+	const newDiv = document.createElement('div')
+	const chart = new Chart(ctx, {
 			type: 'line',
 			data: {
 				labels: obj.time,
@@ -55,7 +71,7 @@ data.forEach((obj,i) => {
 					}, {
 						data: obj.sad,
 						label: 'sad',
-						borderColor: "#FF6277"
+						borderColor: "red"
 					},
 				]
 			},

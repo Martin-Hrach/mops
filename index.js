@@ -1,5 +1,5 @@
 const app = require('express')();
-//const player = require('play-sound')(); přidat až ke konci projectu
+const player = require('play-sound')(); //přidat až ke konci projectu
 const fs = require('fs'), readline = require('readline');
 const path = require("path");
 const https = require("https");
@@ -7,8 +7,8 @@ const ejs = require('ejs');
 const cmd = require('node-cmd');
 
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
-const streamers = ["grimmmz", "sequisha", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "ninja", "tfue",
- 									 "forsen", "amazhs", "loltyler1", "sodapoppin","anton"¨, "summit1g"];
+const streamers = ["grimmmz", "sequisha", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump",
+ 									 "forsen", "amazhs", "loltyler1", "sodapoppin","anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"];
 const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
 const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
 const arrObj = [];
@@ -39,7 +39,7 @@ streamers.forEach(streamer => {
  			  const datestringLast = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
 				const today = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
-        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
+        allResponse.push(JSON.parse(info).videos.filter(a => // a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
 				 																										 a.published_at.slice(0,10).toString() == today && a.length > 3600 ))
 			  // filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datua určité délky
 	      if(allResponse.length === streamers.length) { requestsComplete() } //čekání na vyplnění všech requestů a následné volání funkce
@@ -78,9 +78,9 @@ function done(info) {
 		txtFiles.forEach(item => lineReader(item))
 	});
 	console.log(`Všechny soubory úspěšně zpracovány, celkem staženo: ${info}`)
-	/*player.play('./mech.mp3', (err) => {
-		if (err) console.log(`Could not play sound: ${err}`); nainstalovat mpplayer a pak nastavit path pro windows:/
-	});*/
+	player.play('./mech.mp3', (err) => {
+		if (err) console.log(`Could not play sound: ${err}`); // nainstalovat mpplayer a pak nastavit path pro windows:/
+	});
 };
 
 function lineReader(textID) {
@@ -107,7 +107,8 @@ function lineReader(textID) {
 		if(allSmall.match(lookingForSad)) { sad += 1 }
 	  if(allSmall.match(lookingForLul)) { lul += 1 }
 
-		if(item[1].length === 12) { //primitivní kontrola jestli se jedná o časový údaj ve správném formátu
+		if(item[1].length === 12) {
+      //primitivní kontrola jestli se jedná o časový údaj ve správném formátu
 			const splitedItem = item[1].slice(0,8).split(":");
 			const convertTime = (+splitedItem[0]) * 60 * 60 + (+splitedItem[1]) * 60 + (+splitedItem[2]);
 			let date = new Date(null);
