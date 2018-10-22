@@ -85,11 +85,11 @@ function done(info) {
 
 function lineReader(textID) {
   let target = [].concat(...allResponse).filter(target => target._id == "v"+ textID.slice(0,9));
-	let makeObj = { info: target[0], time: [], lul: [], sad: [] };
+	let makeObj = { info: target[0], time: [], lul: [], sad: [], activity: [] };
 	let time = 0;
 	let lul = 0;
 	let sad = 0;
-
+  let activity = 0;
 	console.log("hodnota filtru target: " +target)
 	console.log("čtu data text souboru: " + textID)
 
@@ -104,13 +104,14 @@ function lineReader(textID) {
 		const item = line.match(reg);
 		const allSmall = line.toLowerCase();
 
+    activity += 1
 		if(allSmall.match(lookingForSad)) { sad += 1 }
 	  if(allSmall.match(lookingForLul)) { lul += 1 }
 
 		if(item[1].length === 12) {
       //primitivní kontrola jestli se jedná o časový údaj ve správném formátu
 			const splitedItem = item[1].slice(0,8).split(":");
-			const convertTime = (+splitedItem[0]) * 60 * 60 + (+splitedItem[1]) * 60 + (+splitedItem[2]);
+			const convertTime = ( +splitedItem[0]) * 60 * 60 + (+splitedItem[1]) * 60 + (+splitedItem[2] );
 			let date = new Date(null);
 					date.setSeconds(convertTime) // specify value for SECONDS here
 	    const result = date.toISOString().substr(11, 8);
@@ -119,8 +120,10 @@ function lineReader(textID) {
 				makeObj.time.push(result)
 				makeObj.lul.push(lul)
 				makeObj.sad.push(sad)
+        makeObj.activity.push(activity)
 				lul = 0;
 				sad = 0;
+        activity = 0;
 				time = convertTime;
 			}
 	  }

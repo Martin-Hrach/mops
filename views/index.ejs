@@ -45,9 +45,9 @@ data.forEach((item,i) => {
 		<h3 class = "nadpis">${item.info.title} </h3>
 		<h3 class = "streamer">${item.info.channel.name} </h3>
 		<p class = "publikováno">Publikováno: ${item.info.published_at} </p>
-		<p class = "views">Shlédnu: ${item.info.views}x	</p>
+		<p class = "views">Shlédnutí: ${item.info.views}x	</p>
  		<a href= ${item.info.url}>Link: ${item.info.url} </a>
-		<canvas id = "myChart${i}"> </canvas>
+		<canvas id = "myChart${i}"></canvas>
 	`
 		newDiv.innerHTML = markup;
 		document.body.appendChild(newDiv)
@@ -72,7 +72,11 @@ data.forEach((obj,i) => {
 						data: obj.sad,
 						label: 'sad',
 						borderColor: "red"
-					},
+					},  {
+						data: obj.activity,
+						label: 'activity',
+						borderColor: "gray"
+					}
 				]
 			},
 			option: {
