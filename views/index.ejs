@@ -3,11 +3,13 @@
 <head>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
 </head>
-<style>
-body {
 
+<style>
+
+body {
 	background-color: #61819A;
 }
+
 .container {
 	border: 1px solid gray;
 	border-radius: 8px;
@@ -18,15 +20,29 @@ body {
 	margin-top: 10px;
 	padding: 10px;
 	line-height: 8px;
-	}
+}
 
 .nadpis {
 		color: darkred;
 }
 .myIframe {
+		display: table;
     position: relative;
-    height: 600px;
-    width: 100%;
+    height: 540px;
+    width: 80%;
+		margin: 0 auto;
+}
+
+.btnRemove {
+	color: gray;
+	border-radius: 6px;
+	float:right;
+}
+
+div {
+	position: relative;
+	margin: 0 auto;
+	margin-top: 10px;
 }
 
 p {
@@ -40,17 +56,15 @@ p {
 
 <script>
 
-
 let data = <%- JSON.stringify(arrObj) %>
 console.log(data)
-
-
 
 data.forEach((item,i) => {
 	const newDiv = document.createElement("div")
 				newDiv.setAttribute("class", "container")
 				newDiv.setAttribute("id" , "container"+i)
 	const markup =`
+		<button class = "btnRemove" id="btnRemove${i}">x</button>
 		<h3 class = "nadpis">${item.info.title} </h3>
 		<h3 class = "streamer">${item.info.channel.name} </h3>
 		<p class = "publikováno">Publikováno: ${item.info.published_at} </p>
@@ -58,31 +72,40 @@ data.forEach((item,i) => {
  		<a href= ${item.info.url}>Link: ${item.info.url} </a>
 		<canvas id = "myChart${i}"></canvas>
 		<button id = "btn${i}">Zobraz video</button>
-		`
+		`;
 		newDiv.innerHTML = markup;
 		document.body.appendChild(newDiv)
-		document.getElementById("btn"+i).addEventListener('click', apendVideo)
+		document.getElementById(`btn${i}`).addEventListener('click', apendVideo)
+		document.getElementById(`btnRemove${i}`).addEventListener('click', removeDiv)
 });
+
+function removeDiv() {
+		const target = this.id.slice(9)
+		console.log(target)
+		document.getElementById(`container${target}`).style.display = "none"
+
+ }
 
 function apendVideo() {
 	const target = this.id.slice(3);
-	const iFrameCheck = document.getElementById("iframe"+target);
+	const iFrameCheck = document.getElementById(`iframe${target}`);
 
 	if(!iFrameCheck) {
 		const vidDiv = document.createElement("div");
-		const iFrame = `<iframe class="myIframe"
-		id = "iframe${target}"
-    src="https://player.twitch.tv/?video=${data[target].info._id}&autoplay=false"
-    frameborder="0"
-    scrolling="no"
-    allowfullscreen="true">
+		const iFrame = `
+		<iframe class="myIframe"
+			id = "iframe${target}"
+	    src="https://player.twitch.tv/?video=${data[target].info._id}&autoplay=false"
+	    frameborder="0"
+	    scrolling="no"
+	    allowfullscreen="true">
 		</iframe>
-		`
+		`;
 		vidDiv.innerHTML = iFrame
-		document.getElementById("container"+target).appendChild(vidDiv)
+		document.getElementById(`container${target}`).appendChild(vidDiv)
 		return;
 		}
-	iFrameCheck && iFrameCheck.style.display == "none"?iFrameCheck.style.display="block":iFrameCheck.style.display="none"
+	iFrameCheck && iFrameCheck.style.display == "none" ? iFrameCheck.style.display="block" : iFrameCheck.style.display="none"
 }
 
 data.forEach((obj,i) => {

@@ -39,7 +39,7 @@ streamers.forEach(streamer => {
  			  const datestringLast = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
 				const today = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
-        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
+        allResponse.push(JSON.parse(info).videos.filter(a => //a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
 				 																										 a.published_at.slice(0,10).toString() == today && a.length > 3600 ))
 			  // filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datua určité délky
 	      if(allResponse.length === streamers.length) { requestsComplete() } //čekání na vyplnění všech requestů a následné volání funkce
@@ -85,7 +85,7 @@ function done(info) {
 
 function lineReader(textID) {
   let target = [].concat(...allResponse).filter(target => target._id == "v"+ textID.slice(0,9));
-	let makeObj = { info: target[0], time: [], lul: [], sad: [], activity: [] };
+	let makeObj = { info: target[0], time: [], lul: [], sad: [], activity: [], err: [] };
 	let time = 0;
 	let lul = 0;
 	let sad = 0;
@@ -101,13 +101,14 @@ function lineReader(textID) {
 		const reg = /\[(.*?)\]/;
 		const lookingForLul = (/\b lul \b|gachigasm|lol|lool|haha|hahaa|omegalul|omegalol|lmao|rofl|omfg|lmfao|ez|pog|clap|wow|poggers|pogchamp|hypers|kreygasm|elegiggle|4head|rekt|clip /);
 		const lookingForSad = (/\b biblethump \b|failfish|babyrage|notlikethis|pepehands|sad|cry|rip|feelswierman|feelsbadman|monkas|pepewhy|dansgame /);
-		const item = line.match(reg);
+		const item = line.match(reg) || [0,111111111111]
 		const allSmall = line.toLowerCase();
 
     activity += 1
 		if(allSmall.match(lookingForSad)) { sad += 1 }
 	  if(allSmall.match(lookingForLul)) { lul += 1 }
 
+    if(item[1] == 111111111111) { console.log("nalezena vyjimka") ; makeObj.err.push(item[1]) }
 		if(item[1].length === 12) {
       //primitivní kontrola jestli se jedná o časový údaj ve správném formátu
 			const splitedItem = item[1].slice(0,8).split(":");
@@ -116,7 +117,7 @@ function lineReader(textID) {
 					date.setSeconds(convertTime) // specify value for SECONDS here
 	    const result = date.toISOString().substr(11, 8);
 
-			if ( (convertTime - time) >= 20 ) { //vložit do array každou časovou jednotku a vynulovat počty nalezených slov
+			if ( (convertTime - time) >= 15 ) { //vložit do array každou časovou jednotku a vynulovat počty nalezených slov
 				makeObj.time.push(result)
 				makeObj.lul.push(lul)
 				makeObj.sad.push(sad)
