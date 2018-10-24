@@ -8,7 +8,7 @@ const cmd = require('node-cmd');
 
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
 const streamers = ["grimmmz", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump","admiralbahroo", "imaqtpie",
- 									 "forsen", "grinninggoat", "sjow", "amazhs", "loltyler1", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"]; 
+ 									 "forsen", "grinninggoat", "sjow", "amazhs", "loltyler1", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"];
 const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
 const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
 const arrObj = [];
@@ -39,7 +39,7 @@ streamers.forEach(streamer => {
  			  const datestringLast = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
 				const today = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
-        allResponse.push(JSON.parse(info).videos.filter(a => //a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
+        allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
 				 																										 a.published_at.slice(0,10).toString() == today && a.length > 3600 ))
 			  // filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datua určité délky
 	      if(allResponse.length === streamers.length) { requestsComplete() } //čekání na vyplnění všech requestů a následné volání funkce
@@ -125,7 +125,7 @@ function lineReader(textID) {
 				lul = 0; sad = 0; activity = 0;	time = convertTime;
 			}
 	  }
-		//console.log('Line from file:', allSmall);
+		console.log('Line from file:', allSmall);
 	});
 
 	lineReader.on('close', function (data) {
