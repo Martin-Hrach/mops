@@ -7,8 +7,8 @@ const ejs = require('ejs');
 const cmd = require('node-cmd');
 
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
-const streamers = ["grimmmz", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump","admiralbahroo",
- 									 "forsen", "grinninggoat", "sjow", "amazhs", "loltyler1", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"];
+const streamers = ["grimmmz", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump","admiralbahroo", "imaqtpie",
+ 									 "forsen", "grinninggoat", "sjow", "amazhs", "loltyler1", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"]; 
 const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
 const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
 const arrObj = [];
@@ -108,7 +108,7 @@ function lineReader(textID) {
 		if(allSmall.match(lookingForSad)) { sad += 1 }
 	  if(allSmall.match(lookingForLul)) { lul += 1 }
 
-    if(item[1] == 111111111111) { console.log("nalezena vyjimka") ; makeObj.err.push(item[1]) }
+    if(item[1] == 111111111111) { console.log("nalezena vyjimka") ; makeObj.err.push(item[1]) } //patrani po bugu
 		if(item[1].length === 12) {
       //primitivní kontrola jestli se jedná o časový údaj ve správném formátu
 			const splitedItem = item[1].slice(0,8).split(":");
@@ -122,10 +122,7 @@ function lineReader(textID) {
 				makeObj.lul.push(lul)
 				makeObj.sad.push(sad)
         makeObj.activity.push(activity)
-				lul = 0;
-				sad = 0;
-        activity = 0;
-				time = convertTime;
+				lul = 0; sad = 0; activity = 0;	time = convertTime;
 			}
 	  }
 		//console.log('Line from file:', allSmall);
