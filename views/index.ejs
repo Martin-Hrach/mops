@@ -111,6 +111,8 @@ data.forEach((item,i) => {
 					newDiv.setAttribute("class", "container")
 					newDiv.setAttribute("id" , "container"+i)
 					newDiv.addEventListener('click', appendChart)
+					newDiv.addEventListener('dblclick', function() { this.style.background == "lightgreen"?
+				  																								 this.style.background ="":this.style.background = "lightgreen" })
 					newDiv.innerHTML = markup;
 
 		document.body.appendChild(newDiv)
@@ -153,6 +155,11 @@ function appendVideo(event) {
 	    scrolling="no"
 	    allowfullscreen="true">
 		</iframe>
+		<form action="/" method="post">
+	    <label for="timeCut">Zadej čas: </label>
+	    <input id="timeCut" type="text" name="time_field" placeholder="h:m:s - h:m:s">
+	    <input type="submit" value="Stáhnout">
+		</form>
 		`;
 		vidDiv.innerHTML = iFrame
 		document.getElementById(`container${target}`).appendChild(vidDiv)

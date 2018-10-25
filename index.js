@@ -5,14 +5,17 @@ const path = require("path");
 const https = require("https");
 const ejs = require('ejs');
 const cmd = require('node-cmd');
+const bodyParser = require('body-parser'); //pro extrahování textu z POST requestů;)
 
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
-const streamers = ["grimmmz", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump","admiralbahroo", "imaqtpie",
+const streamers = ["grimmmz", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump","admiralbahroo", "imaqtpie", "annemunition",
  									 "forsen", "grinninggoat", "sjow", "amazhs", "loltyler1", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"];
 const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
 const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
 const arrObj = [];
 app.locals.arrObj = arrObj;
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
@@ -42,7 +45,7 @@ streamers.forEach(streamer => {
         allResponse.push(JSON.parse(info).videos.filter(a => a.published_at.slice(0,10).toString() == datestringLast && a.length > 3600 ||
 				 																										 a.published_at.slice(0,10).toString() == today && a.length > 3600 ))
 			  // filtruje requesty a ukládá jen data o videích která byla publikovaná v určeném datua určité délky
-	      if(allResponse.length === streamers.length) { requestsComplete() } //čekání na vyplnění všech requestů a následné volání funkce
+        if(allResponse.length === streamers.length) { requestsComplete() } //čekání na vyplnění všech requestů a následné volání funkce
 
 	  	});
 		})
@@ -66,7 +69,7 @@ function cmdDonwload(videosID) {
 						testRes.push(data)
 						console.log(`stažení ${count} souboru z ${videosID.length} dokončeno`)
 						count++
-						if(testRes.length === videosID.length) { done(videosID.length) }
+            if(testRes.length === videosID.length) { done(videosID.length) }
 		})
 	);
 };// po dokončení stahování všech souborů zavola funcki done
@@ -125,7 +128,7 @@ function lineReader(textID) {
 				lul = 0; sad = 0; activity = 0;	time = convertTime;
 			}
 	  }
-		console.log('Line from file:', allSmall);
+		//console.log('Line from file:', allSmall);
 	});
 
 	lineReader.on('close', function (data) {
@@ -134,6 +137,21 @@ function lineReader(textID) {
 		console.log(arrObj.length)
 	});
 };
+
+function videoCuter(data) {
+  const convert = data.split("-")
+  console.log(convert)
+
+  cmd.get(`cd videos & concat_win -vod="326994132" -start=${convert[0]} -end=${convert[1]} -quality="720p60" max-concurrent-downloads 1`,
+		function(err, data, stderr){
+      console.log("hotovo"+ data)
+    })
+}
+
+app.post('/', function(req, res) {
+  videoCuter(req.body.time_field) //dodelat
+  res.status(204).send()
+}); // 25.10 TOHLE JE POSLEDNÍ KLÍČOVÁ PRÁCE
 
 app.get("/", function(req,res){
 	res.render("index")
