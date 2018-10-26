@@ -77,6 +77,27 @@ body {
 	background: #262626;
 }
 
+div.form
+{
+    display: block;
+    text-align: center;
+}
+form
+{
+    display: inline-block;
+		font-size: 18px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+input {
+
+    height: 1.8em;
+    font-size: 19px;
+    line-height: 1.8em;
+}
+
 div {
 	position: relative;
 	margin: 0 auto;
@@ -89,7 +110,7 @@ p {
 </style>
 
 <body>
-	<h1>test-chart v0.87</h1>
+	<h1>test-chart v0.9</h1>
 
 <script>
 
@@ -105,6 +126,14 @@ data.forEach((item,i) => {
 		<p class = "views">Shlédnutí: ${item.info.views}x	</p>
  		<a href= ${item.info.url}>${item.info.url} </a>
 		<br/>
+		<div id="form:${i}" class="form">
+			<form action="/" method="post">
+		    <label for="timeCut">Start | End: </label>
+		    <input id="input:${i}" type="time" name="${data[i].info._id.slice(1)}" step='1' min="00:00:00" max="20:00:00">
+				<input id="input2:${i}" type="time" name="${data[i].info._id.slice(1)}" step='1' min="00:00:00" max="20:00:00">
+				<input id="submit:${i}" type="submit" value="Stáhnout">
+			</form>
+		</div>
 		<button class = "btnVideo" id= "btnVideo${i}">Video</button>
 		`;
 		const newDiv = document.createElement("div")
@@ -117,8 +146,10 @@ data.forEach((item,i) => {
 
 		document.body.appendChild(newDiv)
 		document.getElementById(`btnVideo${i}`).addEventListener('click', appendVideo)
-		document.getElementById(`btnVideo${i}`).addEventListener('click', event => event.stopPropagation());
 		document.getElementById(`btnRemove${i}`).addEventListener('click', removeDiv)
+		document.getElementById(`btnVideo${i}`).addEventListener('click', event => event.stopPropagation())
+		document.getElementById(`form:${i}`).addEventListener('click', event => event.stopPropagation())
+		document.getElementById(`form:${i}`).addEventListener('dblclick', event => event.stopPropagation())
 });
 
 function removeDiv() {
@@ -129,14 +160,14 @@ function removeDiv() {
 function appendChart() {
 	const target = this.id.slice(9);
 	const chartCheck = document.getElementById(`myChart${target}`)
-	const btnVideo = document.getElementById(`btnVideo${target}`)
+	const getForm = document.getElementById(`form:${target}`)
 
 	if(!chartCheck) {
 		const newDiv = document.createElement("div");
 					newDiv.innerHTML =`<canvas id ="myChart${target}"></canvas>`;
 
-		document.getElementById(`container${target}`).insertBefore(newDiv,btnVideo)
-		makeChart(data[target], target) //neco tu nesedí
+		document.getElementById(`container${target}`).insertBefore(newDiv,getForm) //vkládá chart před formulář
+		makeChart(data[target], target)
 		return;
 	}
 	chartCheck.style.display == "none"? chartCheck.style.display="block" : chartCheck.style.display="none" ;
@@ -155,11 +186,6 @@ function appendVideo(event) {
 	    scrolling="no"
 	    allowfullscreen="true">
 		</iframe>
-		<form action="/" method="post">
-	    <label for="timeCut">Zadej čas: </label>
-	    <input id="timeCut" type="text" name="time_field" placeholder="h:m:s - h:m:s">
-	    <input type="submit" value="Stáhnout">
-		</form>
 		`;
 		vidDiv.innerHTML = iFrame
 		document.getElementById(`container${target}`).appendChild(vidDiv)

@@ -8,8 +8,8 @@ const cmd = require('node-cmd');
 const bodyParser = require('body-parser'); //pro extrahování textu z POST requestů;)
 
 const dirpath = path.join(__dirname, './twitchChat') // get=> všechny soubory ve složce twitchChat skoncovkou .txt
-const streamers = ["grimmmz", "smoke", "kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump","admiralbahroo", "imaqtpie", "annemunition",
- 									 "forsen", "grinninggoat", "sjow", "amazhs", "loltyler1", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "nickmercs", "worrun_tv"];
+const streamers = ["grimmmz", "smoke","kotton", "nl_kripp", "drdisrespectlive", "shroud", "scump"/*,"admiralbahroo", "imaqtpie", "annemunition", "grinninggoat","sjow", "amaz", "disguisedtoasths", "sodapoppin", "anton", "summit1g", "drlupo", "goldglove", "worrun_tv"*/
+ 									 ];
 const allResponse = []; // ukládání response pro api call() funkci zajištění podmínky při čekání na vyplnení úkolů
 const testRes = []; // ukládání response pro cmdDonwload() funkci zajištění podmínky při čekání na vyplnení úkolů
 const arrObj = [];
@@ -36,7 +36,7 @@ streamers.forEach(streamer => {
 			res.on('data', function(dataFlow) {
 				info += dataFlow
 			});
-
+      res.on('error', function(e) { console.log(e.message)})
 			res.on('end', function() {
 				const d = new Date();
  			  const datestringLast = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()-1}`;
@@ -139,17 +139,23 @@ function lineReader(textID) {
 };
 
 function videoCuter(data) {
-  const convert = data.split("-")
-  console.log(convert)
+  console.log(data)
+  const vodID =  Object.keys(data)
+  let start = data[vodID][0].split(":").join(" ")
+  let end = data[vodID][1].split(":").join(" ")
 
-  cmd.get(`cd videos & concat_win -vod="326994132" -start=${convert[0]} -end=${convert[1]} -quality="720p60" max-concurrent-downloads 1`,
-		function(err, data, stderr){
+  if(start.length < 6) { start += " 00"}
+  if(end.length < 6) { end += " 00"}
+  console.log(start)
+  
+  cmd.get(`cd videos & concat_win -vod="${vodID[0]}" -start="${start}" -end="${end}"`,
+	 function(err, data, stderr){
       console.log("hotovo"+ data)
-    })
+  })
 }
 
 app.post('/', function(req, res) {
-  videoCuter(req.body.time_field) //dodelat
+  videoCuter(req.body) //dodelat
   res.status(204).send()
 }); // 25.10 TOHLE JE POSLEDNÍ KLÍČOVÁ PRÁCE
 
